@@ -92,7 +92,15 @@ export default {
                 axios.put('http://localhost:5000/posts', {
                     post_id: this.post_data.id,
                     apply_users: this.post_data.apply_users
-                }).then()
+                }).then(
+                    axios.post('http://localhost:5000/notification', {
+                        time_created: "",
+                        from_user: this.user_add,
+                        to_user: this.post_data.user,
+                        post: this.post_data.id,
+                        notification_type: 'N'
+                    }).then()
+                )
             }
             
         },

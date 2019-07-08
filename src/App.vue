@@ -6,7 +6,7 @@
         <router-link class="home" :to="{name: 'home'}"></router-link>
         <table>
           <tr>
-            <td><router-link class="profile_img" :style="{backgroundImage: 'url('+set_picture+')'}" :to="{name: 'profile'}"/></td>
+            <td><router-link class="profile_img" :style="{backgroundImage: 'url('+picture_img+')'}" :to="{name: 'profile'}"/></td>
             <td><router-link class="profile_name" :to="{name:'profile'}">{{user.name}}</router-link></td>
             <td><img ref="notif_list" src="./assets/notification_w.png" @click="show_toggle"/></td>
 
@@ -17,7 +17,7 @@
     </div>
     <transition name="notif-popup">
       <notifications v-if="show_notif" 
-                    :user_id="user.id"
+                    :user_id="user"
                     :style="{postion:'absolute',top:popup_top, left:popup_left }"
                     />
     </transition>
@@ -148,10 +148,26 @@ export default {
       let p = this.$route.path
       if(p==='/'){return false}
       else{return true}
+    },
+    picture_img(){
+      if(this.user.profile){
+
+      
+    if(this.user.profile.gender == 'M'){
+        return "./assets/profile_male.png"
+      }
+      else if(this.user.profile.gender == 'F'){
+        return require("./assets/profile_female.png")
+      }
+      else{
+        return require("./assets/profile_neutral.png")
+      }
+    }
+    return ""
     }
   },
   mounted(){
-    this.check_gender()
+    //this.check_gender()
   },
   methods:{
     getData(d){
