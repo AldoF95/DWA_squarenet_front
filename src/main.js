@@ -15,6 +15,7 @@ Vue.use(VueCookie)
 import VCalendar from 'v-calendar'
 Vue.use(VCalendar)
 
+
 new Vue({
   router,
   render: h => h(App)

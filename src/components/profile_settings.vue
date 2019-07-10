@@ -16,6 +16,17 @@
                     <tr>
                         <td>Username:</td>
                         <td><input type="text" name="username" placeholder="username" v-model="update_data.name" /></td>
+                        <td rowspan="7">
+                            <div class="tags-container" v-if="tag_list">
+                                <ul class="tags-list"  v-for="tag in tags" :key="tag.id">
+                                    <li :value="tag.id">
+                                        {{tag.name}} 
+                                        <button class="add-button" v-if="!tag_included(tag.name)">Add Me</button>
+                                        <button class="remove-button" v-if="tag_included(tag.name)">Remove Me</button>
+                                    </li>
+                                </ul>
+                            </div>
+                        </td>
                     </tr>
                     <tr>
                         <td>Email:</td>
@@ -23,7 +34,8 @@
                     </tr>
                     <tr>
                         <td>Tags:</td>
-                        <td><select><option v-for="tag in user_data.profile.tags" :key="tag">{{tag}}</option></select></td>
+                        <td><button class="change-button" @click.prevent="show_tags">Change tags</button></td>
+                        
                     </tr>
                     <tr>
                         <td>Gender:</td>
@@ -43,7 +55,7 @@
                     </tr>
                     <tr>
                         <td></td>
-                        <td><button @click="update_profile">Save changes</button></td>
+                        <td><button class="change-button" @click="update_profile">Save changes</button></td>
                     </tr>
                 </table>
             </section>
@@ -63,7 +75,7 @@
                     </tr>
                     <tr>
                         <td></td>
-                        <td><button>Change password</button></td>
+                        <td><button class="change-button">Change password</button></td>
                     </tr>
                 </table>
             </section>
@@ -83,6 +95,8 @@
 
 <script>
 import axios from 'axios'
+import API from '../api_service'
+
 
 export default {
     name: 'profile-settings',
@@ -93,6 +107,8 @@ export default {
             active: '#3889FF',
             non_active: '#012477',
             genders: ['M', 'F', 'N'],
+            tags: [],
+            tag_list: false,
             update_data:{
                 email: this.user_data.email,
                 name: this.user_data.name,
@@ -103,6 +119,9 @@ export default {
                 old_password: ""
             }
         }
+    },
+    mounted(){
+        this.get_t()
     },
     methods:{
         change_show(target){
@@ -124,6 +143,20 @@ export default {
             )
             
         },
+        get_t(){
+            API.get_tags().then(({data})=>{
+                this.tags = data.data
+            })
+        },
+        show_tags(){
+            this.tag_list = !this.tag_list
+        },
+        tag_included(tag_name){
+            let user_tags = this.user_data.profile.tags
+            if(user_tags.includes(tag_name)){return true}
+            else{return false}
+        }
+
     }
     
 }
@@ -169,7 +202,7 @@ export default {
     margin-top: 30px;
 }
 .profile-settings .settings-content .general table{
-    width: 500px;
+    width: 700px;
     border-collapse: separate;
     border-spacing: 0 20px;
 }
@@ -181,6 +214,41 @@ export default {
     border-radius: 3px;
     padding-left: 8px;
     margin-left: 50px;
+}
+
+.profile-settings .settings-content .general table .tags-container{
+    overflow:auto;
+}
+
+.profile-settings .settings-content .general table .tags-list{
+    list-style: none;
+}
+.profile-settings .settings-content .general table .tags-list button{
+    text-align: center;
+    margin-left: 10px;
+    padding: 5px 8px;
+    height: 25px;
+    background: none;
+    border: 1.5px solid;
+    border-radius: 5px;
+}
+.profile-settings .settings-content .general table .tags-list .add-button{
+    border-color: lime;
+}
+.profile-settings .settings-content .general table .tags-list .add-button:hover{
+    cursor: pointer;
+    background-color: lime;
+    font-weight: bold;
+    color: #ffffff;
+}
+.profile-settings .settings-content .general table .tags-list .remove-button{
+    border-color: orangered;
+}
+.profile-settings .settings-content .general table .tags-list .remove-button:hover{
+    cursor: pointer;
+    background-color: orangered;
+    font-weight: bold;
+    color: #ffffff;
 }
 .profile-settings .settings-content .general table textarea{
     font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
@@ -204,7 +272,7 @@ export default {
 .profile-settings .settings-content .general table tr>td:nth-child(1){
     text-align: right;
 }
-.profile-settings .settings-content .general table tr td button{
+.profile-settings .settings-content .general table tr td .change-button{
         margin-left: 50px;
         padding: 5px 10px;
         height: 30px;
@@ -214,7 +282,7 @@ export default {
         font-weight: bold;
         box-shadow: 3px 3px 6px rgba(0,0,0,0.16)
 }
-.profile-settings .settings-content .general table tr td button:hover{
+.profile-settings .settings-content .general table tr td .change-button:hover{
     cursor: pointer;
     background-color: #012477;
     color: #ffffff;
@@ -239,7 +307,7 @@ export default {
 .profile-settings .settings-content .password table tr:nth-child(4)>td:nth-child(1){
     text-align: center;
 }
-.profile-settings .settings-content .password table tr td button{
+.profile-settings .settings-content .password table tr td .change-button{
         margin-left: 50px;
         padding: 5px 10px;
         height: 30px;
@@ -249,7 +317,7 @@ export default {
         font-weight: bold;
         box-shadow: 3px 3px 6px rgba(0,0,0,0.16)
 }
-.profile-settings .settings-content .password table tr td button:hover{
+.profile-settings .settings-content .password table tr td .change-button:hover{
     cursor: pointer;
     background-color: #012477;
     color: #ffffff;
